@@ -67,7 +67,7 @@ for y, row in enumerate(maze):
             valid_positions.append((x, y))
 
 CAT_MOVE_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(CAT_MOVE_EVENT, 500)
+pygame.time.set_timer(CAT_MOVE_EVENT, 200)
 
 def heuristic(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
@@ -143,7 +143,7 @@ reset_game()
 while True:
     dt = clock.tick(FPS)
 
-    if state == GAME:
+    if state == GAME or state == AI_PLAY:
         game_time_ms += dt
 
     for event in pygame.event.get():
