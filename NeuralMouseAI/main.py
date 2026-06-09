@@ -53,11 +53,6 @@ AI_PLAY = 6
 
 state = MENU
 
-win_count = 0
-lose_count = 0
-ai_error_msg = ""
-ai_error_timer = 0
-
 game_time_ms = 0
 play_history = []
 
