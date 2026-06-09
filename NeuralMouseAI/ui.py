@@ -10,21 +10,23 @@ class Button:
 
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()
-        color = BLUE
-        if self.rect.collidepoint(mouse_pos):
-            color = GREEN
+        is_hovered = self.rect.collidepoint(mouse_pos)
+        
+        bg_color = (40, 15, 60) if is_hovered else (25, 10, 40)
+        border_color = NEON_CYAN if is_hovered else NEON_PINK
+        text_color = WHITE if is_hovered else NEON_CYAN
 
-        pygame.draw.rect(screen, color, self.rect, border_radius=15)
-        pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=15)
+        pygame.draw.rect(screen, bg_color, self.rect, border_radius=4)
+        pygame.draw.rect(screen, border_color, self.rect, 2, border_radius=4)
 
-        text_surface = self.font.render(self.text, True, WHITE)
-        screen.blit(
-            text_surface,
-            (
-                self.rect.x + self.rect.width // 2 - text_surface.get_width() // 2,
-                self.rect.y + self.rect.height // 2 - text_surface.get_height() // 2
-            )
-        )
+        if is_hovered:
+            glow_rect = self.rect.inflate(4, 4)
+            pygame.draw.rect(screen, NEON_CYAN, glow_rect, 1, border_radius=6)
+
+        text_surface = self.font.render(self.text, True, text_color)
+        text_x = self.rect.x + (self.rect.width - text_surface.get_width()) // 2
+        text_y = self.rect.y + (self.rect.height - text_surface.get_height()) // 2
+        screen.blit(text_surface, (text_x, text_y))
 
     def clicked(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
