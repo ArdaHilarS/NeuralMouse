@@ -34,12 +34,12 @@ background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 tree_img = pygame.image.load("NeuralMouseAI/assets/Images/tree.png")
 tree_img = pygame.transform.scale(tree_img, (TILE_SIZE, TILE_SIZE))
 
-start_button = Button((WIDTH - 260) // 2, 300, 260, 80, "PLAY")
-ai_button = Button((WIDTH - 260) // 2, 410, 260, 80, "TRAIN AI")
-ai_play_default = Button((WIDTH - 260) // 2, 520, 260, 80, "AI PLAYS")
-quit_button = Button((WIDTH - 260) // 2, 630, 260, 80, "QUIT")
-resume_button = Button((900 - 260) // 2, 320, 260, 80, "RESUME") 
-restart_button = Button((WIDTH - 260) // 2, 420, 260, 80, "RESTART")
+start_button = Button((WIDTH - 280) // 2, 320, 280, 70, "START MANUAL RUN")
+ai_button = Button((WIDTH - 280) // 2, 410, 280, 70, "OPTIMIZE AI (TRAIN)")
+ai_play_default = Button((WIDTH - 280) // 2, 500, 280, 70, "EXECUTE AI AGENT")
+quit_button = Button((WIDTH - 280) // 2, 590, 280, 70, "TERMINATE SYSTEM")
+resume_button = Button((900 - 260) // 2, 340, 260, 70, "RESUME CORE") 
+restart_button = Button((WIDTH - 260) // 2, 440, 260, 70, "REBOOT SIMULATION")
 
 agent = DQN_Agent(state=10, action=4)
 
@@ -54,6 +54,15 @@ AI_PLAY = 6
 state = MENU
 
 game_time_ms = 0
+
+game_time_ms = 0
+play_history = []
+
+ai_wins = 0
+ai_losses = 0
+player_wins = 0
+player_losses = 0
+
 play_history = []
 
 player = None
@@ -161,12 +170,13 @@ while True:
                 pygame.quit()
                 sys.exit()
             if ai_play_default.clicked(event):
-                reset_game()
-                if agent.load("mouse_ai.pth"):
+                if os.path.exists("mouse_ai.pth"): 
+                    reset_game()
+                    agent.load("mouse_ai.pth")
                     agent.epsilon = 0
+                    state = AI_PLAY
                 else:
-                    agent.epsilon = 0.1
-                state = AI_PLAY
+                    print("[-] Error: No trained model found! Please Train the AI first.")
 
         elif state == AI:
             TOTAL_EPISODES = 3000
@@ -232,13 +242,16 @@ while True:
 
                 if episode % 10 == 0:
                     percent = round(episode / TOTAL_EPISODES * 100)
-                    screen.blit(background, (0, 0)) 
+                    screen.fill(BLACK) 
                     
-                    title = big_font.render("AI LEARNING...", True, (0, 150, 255))
-                    screen.blit(title, (WIDTH // 2 - (title.get_width() // 2), 200))
+                    title = big_font.render("OPTIMIZING WEIGHTS...", True, NEON_PINK)
+                    screen.blit(title, (WIDTH // 2 - (title.get_width() // 2), 220))
                     
-                    info = small_font.render(f"Progress: {percent}%  |  Epsilon: {agent.epsilon:.3f}", True, WHITE)
-                    screen.blit(info, (WIDTH // 2 - (info.get_width() // 2), 300))
+                    info = small_font.render(f"PROGRESS: {percent}%  |  EXPLORATION EPSILON: {agent.epsilon:.3f}", True, NEON_CYAN)
+                    screen.blit(info, (WIDTH // 2 - (info.get_width() // 2), 320))
+                    
+                    subtext = small_font.render("PYTORCH DEEP Q-NETWORK ACTIVE", True, NEON_GREEN)
+                    screen.blit(subtext, (WIDTH // 2 - (subtext.get_width() // 2), 400))
                     
                     pygame.display.update()
                     
@@ -308,15 +321,19 @@ while True:
     if state == GAME or state == AI_PLAY:
         if (player.x, player.y) == cheese_pos:
             if state == AI_PLAY: 
+                ai_wins += 1        
                 reset_game()
             else: 
+                player_wins += 1
                 state = WIN
                 
         for cat in cats:
             if (player.x, player.y) == (cat[0], cat[1]):
                 if state == AI_PLAY: 
+                    ai_losses += 1  
                     reset_game()
                 else: 
+                    player_losses += 1
                     state = LOSE
 
     screen.blit(background, (0, 0))
