@@ -11,7 +11,6 @@ WHITE = (255, 255, 255)
 BLACK = (10, 5, 18)
 GRAY = (45, 35, 60)
 
-# Vibrant Neon Glow Colors
 NEON_PINK = (255, 0, 127)    
 NEON_CYAN = (0, 245, 255)     
 NEON_YELLOW = (255, 211, 0)  

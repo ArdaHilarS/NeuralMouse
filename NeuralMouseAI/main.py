@@ -21,6 +21,10 @@ clock = pygame.time.Clock()
 
 big_font = pygame.font.SysFont("Arial", 70, bold=True)
 small_font = pygame.font.SysFont("Arial", 28)
+bold_small_font = pygame.font.SysFont("Arial", 28, bold=True)
+
+big_font = pygame.font.SysFont("Arial", 70, bold=True)
+small_font = pygame.font.SysFont("Arial", 28)
 
 cheese_img = pygame.image.load("NeuralMouseAI/assets/Images/cheese.png")
 cheese_img = pygame.transform.scale(cheese_img, (34, 34))
@@ -339,12 +343,12 @@ while True:
     screen.blit(background, (0, 0))
 
     if state == MENU:
-        title = big_font.render("NEURAL MOUSE", True, WHITE)
-        title_rect = title.get_rect(centerx=WIDTH/2, top=120)
+        title = big_font.render("NEURAL MOUSE // AI", True, NEON_PINK)
+        title_rect = title.get_rect(centerx=WIDTH/2, top=130)
         screen.blit(title, title_rect)
         
-        info = small_font.render("AI learns to solve the maze", True, WHITE)
-        info_rect = info.get_rect(centerx=WIDTH/2, top=220)
+        info = small_font.render("Reinforcement Learning Grid Network Exploration", True, NEON_CYAN)
+        info_rect = info.get_rect(centerx=WIDTH/2, top=230)
         screen.blit(info, info_rect)
 
         start_button.draw(screen)
@@ -353,7 +357,7 @@ while True:
         quit_button.draw(screen)
 
     elif state == GAME or state == PAUSE or state == AI_PLAY:
-        panel_width = 300
+        panel_width = 320
         game_area_width = WIDTH - panel_width
         maze_width = COLS * TILE_SIZE
         maze_height = ROWS * TILE_SIZE
@@ -370,9 +374,10 @@ while True:
                     TILE_SIZE
                 )
                 if tile == "#":
-                    screen.blit(tree_img, rect)     
+                    screen.blit(tree_img, rect)
                 else:
-                    pygame.draw.rect(screen, PATH_COLOR, rect, border_radius=4)
+                    pygame.draw.rect(screen, PATH_COLOR, rect)
+                    pygame.draw.rect(screen, (35, 20, 50), rect, 1)
 
         screen.blit(cheese_img, (maze_offset_x + cheese_pos[0] * TILE_SIZE + 2, maze_offset_y + cheese_pos[1] * TILE_SIZE + 2))
 
@@ -383,72 +388,75 @@ while True:
             player.draw(screen, maze_offset_x, maze_offset_y)
 
         pygame.draw.rect(screen, PANEL_COLOR, (WIDTH - panel_width, 0, panel_width, HEIGHT))
-        pygame.draw.line(screen, OUTLINE_COLOR, (WIDTH - panel_width, 0), (WIDTH - panel_width, HEIGHT), 3)
+        pygame.draw.line(screen, NEON_CYAN, (WIDTH - panel_width, 0), (WIDTH - panel_width, HEIGHT), 3)
 
-        panel_title = big_font.render("INFO", True, WHITE)
+        panel_title = big_font.render("SYSTEM", True, NEON_CYAN)
         title_x = WIDTH - panel_width + (panel_width - panel_title.get_width()) // 2
-        screen.blit(panel_title, (title_x, 40))
-        
-        pygame.draw.line(screen, BLUE, (title_x - 15, 120), (title_x + panel_title.get_width() + 15, 120), 4)
+        screen.blit(panel_title, (title_x, 30))
 
-        margin_left = WIDTH - panel_width + 40
+        pygame.draw.line(screen, NEON_PINK, (WIDTH - panel_width + 20, 110), (WIDTH - 20, 110), 3)
+        margin_left = WIDTH - panel_width + 30
 
-        t1_icon = small_font.render("►", True, GREEN)
-        t1_text = small_font.render("Move: Arrows", True, LIGHT_GRAY)
-        screen.blit(t1_icon, (margin_left, 180))
-        screen.blit(t1_text, (margin_left + 35, 180))
+        active_mode_str = "AI AGENT RUNNING" if state == AI_PLAY else "MANUAL TELEOP"
+        mode_color = NEON_GREEN if state == AI_PLAY else NEON_YELLOW
+        mode_lbl = bold_small_font.render(active_mode_str, True, mode_color)
+        screen.blit(mode_lbl, (margin_left, 135))
 
-        t2_icon = small_font.render("★", True, YELLOW)
-        t2_text = small_font.render("Goal: Cheese", True, LIGHT_GRAY)
-        screen.blit(t2_icon, (margin_left, 240))
-        screen.blit(t2_text, (margin_left + 35, 240))
+        metric_header = small_font.render("--- NETWORK TELEMETRY ---", True, GRAY)
+        screen.blit(metric_header, (margin_left, 190))
 
-        t3_icon = small_font.render("■", True, RED)
-        t3_text = small_font.render("Pause: ESC", True, LIGHT_GRAY)
-        screen.blit(t3_icon, (margin_left, 300))
-        screen.blit(t3_text, (margin_left + 35, 300))
+        ai_win_lbl = small_font.render(f"AI SUCCESSES: {ai_wins}", True, NEON_GREEN)
+        screen.blit(ai_win_lbl, (margin_left, 230))
 
-        pygame.draw.line(screen, OUTLINE_COLOR, (margin_left, 370), (WIDTH - 40, 370), 2)
+        ai_loss_lbl = small_font.render(f"AI FAILURES: {ai_losses}", True, NEON_PINK)
+        screen.blit(ai_loss_lbl, (margin_left, 270))
+
+        total_ai_runs = ai_wins + ai_losses
+        computed_ratio = (ai_wins / total_ai_runs * 100) if total_ai_runs > 0 else 0.0
+        ratio_lbl = small_font.render(f"EFFICIENCY RATIO: {computed_ratio:.1f}%", True, NEON_YELLOW)
+        screen.blit(ratio_lbl, (margin_left, 310))
+
+        pygame.draw.line(screen, GRAY, (margin_left, 365), (WIDTH - 30, 365), 1)
 
         seconds = game_time_ms // 1000
-        timer_label = small_font.render("TIME", True, BLUE)
-        screen.blit(timer_label, (margin_left, 400))
-        
+        timer_label = small_font.render("ELAPSED TIME", True, NEON_CYAN)
+        screen.blit(timer_label, (margin_left, 390))
+
         timer_val = big_font.render(f"{seconds}s", True, WHITE)
-        screen.blit(timer_val, (margin_left, 440))
+        screen.blit(timer_val, (margin_left, 430))
 
         if state == PAUSE:
             overlay = pygame.Surface((game_area_width, HEIGHT), pygame.SRCALPHA)
-            overlay.fill((10, 10, 15, 200)) 
+            overlay.fill((12, 5, 20, 210)) 
             screen.blit(overlay, (0, 0))
 
-            pause_title = big_font.render("PAUSED", True, YELLOW)
-            pause_rect = pause_title.get_rect(centerx=game_area_width // 2, top=180)
+            pause_title = big_font.render("PROCESS PAUSED", True, NEON_YELLOW)
+            pause_rect = pause_title.get_rect(centerx=game_area_width // 2, top=200)
             screen.blit(pause_title, pause_rect)
             resume_button.draw(screen)
 
     elif state == WIN:
-        win_text = big_font.render("YOU WIN!", True, GREEN)
-        win_rect = win_text.get_rect(centerx=WIDTH//2, top=150)
+        win_text = big_font.render("RUN SUCCESSFUL", True, NEON_GREEN)
+        win_rect = win_text.get_rect(centerx=WIDTH//2, top=160)
         screen.blit(win_text, win_rect)
         
-        info = small_font.render("The mouse found the cheese!", True, WHITE)
+        info = small_font.render("Target payload reached successfully.", True, WHITE)
         info_rect = info.get_rect(centerx=WIDTH//2, top=260)
         screen.blit(info, info_rect)
         
         final_seconds = game_time_ms // 1000
-        time_info = small_font.render(f"Clear Time: {final_seconds}s", True, LIGHT_GRAY)
+        time_info = small_font.render(f"TOTAL TIME ELAPSED: {final_seconds}s", True, NEON_CYAN)
         time_rect = time_info.get_rect(centerx=WIDTH//2, top=320)
         screen.blit(time_info, time_rect)
 
         restart_button.draw(screen)
 
     elif state == LOSE:
-        lose_text = big_font.render("YOU LOST!", True, RED)
+        lose_text = big_font.render("CRITICAL FAILURE", True, NEON_PINK)
         lose_rect = lose_text.get_rect(centerx=WIDTH//2, top=180)
         screen.blit(lose_text, lose_rect)
         
-        info = small_font.render("The cat caught the mouse!", True, WHITE)
+        info = small_font.render("The agent position was compromised by the threat matrix unit.", True, WHITE)
         info_rect = info.get_rect(centerx=WIDTH//2, top=290)
         screen.blit(info, info_rect)
         
