@@ -201,18 +201,22 @@ while True:
                     elif action == 2: player.move(-1, 0, maze)
                     elif action == 3: player.move(1, 0, maze)
                     
-                    reward = -0.1
+                    reward = -0.2
                     
                     if player.x == old_x and player.y == old_y:
-                        reward -= 0.5
+                        reward -= 0.8
 
                     old_distance = abs(old_x - cheese_pos[0]) + abs(old_y - cheese_pos[1])
                     new_distance = abs(player.x - cheese_pos[0]) + abs(player.y - cheese_pos[1])
 
                     if new_distance < old_distance:
-                        reward += 0.2
+                        reward += 0.3
                     else:
-                        reward -= 0.2
+                        reward -= 0.6
+                    
+                    cat_distance = abs(player.x - cats[0][0]) + abs(player.y - cats[0][1])
+                    if cat_distance <= 2:
+                        reward -= 0.3                    
 
                     if (player.x, player.y) == (cats[0][0], cats[0][1]):
                         reward = -10.0
