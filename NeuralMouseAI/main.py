@@ -43,7 +43,7 @@ ai_button = Button((WIDTH - 340) // 2, 420, 340, 60, "OPTIMIZE AI (TRAIN)")
 ai_play_default = Button((WIDTH - 340) // 2, 500, 340, 60, "EXECUTE AI AGENT")
 quit_button = Button((WIDTH - 340) // 2, 580, 340, 60, "TERMINATE SYSTEM")
 
-resume_button = Button((WIDTH - panel_width - 280) // 2 if 'panel_width' in locals() else 300, 380, 280, 60, "RESUME CORE") 
+resume_button = Button((WIDTH - panel_width - 280) // 2, 380, 280, 60, "RESUME CORE") 
 restart_button = Button((WIDTH - 280) // 2, 440, 280, 60, "REBOOT SIMULATION")
 
 agent = DQN_Agent(state=10, action=4)
@@ -359,7 +359,6 @@ while True:
 
     
     elif state == GAME or state == PAUSE or state == AI_PLAY:
-        panel_width = 340 
         game_area_width = WIDTH - panel_width
         maze_width = COLS * TILE_SIZE
         maze_height = ROWS * TILE_SIZE
