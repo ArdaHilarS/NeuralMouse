@@ -23,7 +23,8 @@ To do this, we built a simple maze game where a mouse learns to reach a piece of
 * Pygame
 * NumPy
 
-
+![train](Training.png)
+![AIplay](AIplay.png)
  Running the Project
 
 pip install pygame torch numpy
