@@ -38,12 +38,13 @@ background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 tree_img = pygame.image.load("NeuralMouseAI/assets/Images/tree.png")
 tree_img = pygame.transform.scale(tree_img, (TILE_SIZE, TILE_SIZE))
 
-start_button = Button((WIDTH - 280) // 2, 320, 280, 70, "START MANUAL RUN")
-ai_button = Button((WIDTH - 280) // 2, 410, 280, 70, "OPTIMIZE AI (TRAIN)")
-ai_play_default = Button((WIDTH - 280) // 2, 500, 280, 70, "EXECUTE AI AGENT")
-quit_button = Button((WIDTH - 280) // 2, 590, 280, 70, "TERMINATE SYSTEM")
-resume_button = Button((900 - 260) // 2, 340, 260, 70, "RESUME CORE") 
-restart_button = Button((WIDTH - 260) // 2, 440, 260, 70, "REBOOT SIMULATION")
+start_button = Button((WIDTH - 340) // 2, 340, 340, 60, "START MANUAL RUN")
+ai_button = Button((WIDTH - 340) // 2, 420, 340, 60, "OPTIMIZE AI (TRAIN)")
+ai_play_default = Button((WIDTH - 340) // 2, 500, 340, 60, "EXECUTE AI AGENT")
+quit_button = Button((WIDTH - 340) // 2, 580, 340, 60, "TERMINATE SYSTEM")
+
+resume_button = Button((WIDTH - panel_width - 280) // 2 if 'panel_width' in locals() else 300, 380, 280, 60, "RESUME CORE") 
+restart_button = Button((WIDTH - 280) // 2, 440, 280, 60, "REBOOT SIMULATION")
 
 agent = DQN_Agent(state=10, action=4)
 
@@ -323,27 +324,27 @@ while True:
         pygame.time.delay(80)
 
     if state == GAME or state == AI_PLAY:
-        if (player.x, player.y) == cheese_pos:
-            if state == AI_PLAY: 
-                ai_wins += 1        
-                reset_game()
-            else: 
-                player_wins += 1
-                state = WIN
-                
-        for cat in cats:
-            if (player.x, player.y) == (cat[0], cat[1]):
+            if (player.x, player.y) == cheese_pos:
                 if state == AI_PLAY: 
-                    ai_losses += 1  
+                    ai_wins += 1        
                     reset_game()
                 else: 
-                    player_losses += 1
-                    state = LOSE
+                    player_wins += 1 
+                    state = WIN
+                    
+            for cat in cats:
+                if (player.x, player.y) == (cat[0], cat[1]):
+                    if state == AI_PLAY: 
+                        ai_losses += 1  
+                        reset_game()
+                    else: 
+                        player_losses += 1  
+                        state = LOSE
 
     screen.blit(background, (0, 0))
 
     if state == MENU:
-        title = big_font.render("NEURAL MOUSE // AI", True, NEON_PINK)
+        title = big_font.render("NEURAL MOUSE // AI", True, RETRO_CYAN)
         title_rect = title.get_rect(centerx=WIDTH/2, top=130)
         screen.blit(title, title_rect)
         
@@ -356,8 +357,9 @@ while True:
         ai_play_default.draw(screen)
         quit_button.draw(screen)
 
+    
     elif state == GAME or state == PAUSE or state == AI_PLAY:
-        panel_width = 320
+        panel_width = 340 
         game_area_width = WIDTH - panel_width
         maze_width = COLS * TILE_SIZE
         maze_height = ROWS * TILE_SIZE
@@ -367,76 +369,93 @@ while True:
 
         for y, row in enumerate(maze):
             for x, tile in enumerate(row):
-                rect = pygame.Rect(
-                    maze_offset_x + x * TILE_SIZE,
-                    maze_offset_y + y * TILE_SIZE,
-                    TILE_SIZE,
-                    TILE_SIZE
-                )
+                rect = pygame.Rect(maze_offset_x + x * TILE_SIZE, maze_offset_y + y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                 if tile == "#":
                     screen.blit(tree_img, rect)
                 else:
                     pygame.draw.rect(screen, PATH_COLOR, rect)
-                    pygame.draw.rect(screen, (35, 20, 50), rect, 1)
+                    pygame.draw.rect(screen, (40, 30, 60), rect, 1)
 
         screen.blit(cheese_img, (maze_offset_x + cheese_pos[0] * TILE_SIZE + 2, maze_offset_y + cheese_pos[1] * TILE_SIZE + 2))
-
         for cat in cats:
             screen.blit(cat_img, (maze_offset_x + cat[0] * TILE_SIZE + 2, maze_offset_y + cat[1] * TILE_SIZE + 2))
-
         if player is not None:
             player.draw(screen, maze_offset_x, maze_offset_y)
 
         pygame.draw.rect(screen, PANEL_COLOR, (WIDTH - panel_width, 0, panel_width, HEIGHT))
-        pygame.draw.line(screen, NEON_CYAN, (WIDTH - panel_width, 0), (WIDTH - panel_width, HEIGHT), 3)
+        pygame.draw.line(screen, RETRO_CYAN, (WIDTH - panel_width, 0), (WIDTH - panel_width, HEIGHT), 2)
 
-        panel_title = big_font.render("SYSTEM", True, NEON_CYAN)
+        panel_title = big_font.render("Metrics", True, RETRO_CYAN)
         title_x = WIDTH - panel_width + (panel_width - panel_title.get_width()) // 2
-        screen.blit(panel_title, (title_x, 30))
+        screen.blit(panel_title, (title_x, 25))
 
-        pygame.draw.line(screen, NEON_PINK, (WIDTH - panel_width + 20, 110), (WIDTH - 20, 110), 3)
-        margin_left = WIDTH - panel_width + 30
+        pygame.draw.line(screen, RETRO_ORANGE, (WIDTH - panel_width + 20, 95), (WIDTH - 20, 95), 2)
+        margin_left = WIDTH - panel_width + 25
 
-        active_mode_str = "AI AGENT RUNNING" if state == AI_PLAY else "MANUAL TELEOP"
-        mode_color = NEON_GREEN if state == AI_PLAY else NEON_YELLOW
+        active_mode_str = "CORE: AI AGENT" if state == AI_PLAY else "CORE: MANUAL"
+        mode_color = RETRO_GREEN if state == AI_PLAY else RETRO_YELLOW
         mode_lbl = bold_small_font.render(active_mode_str, True, mode_color)
-        screen.blit(mode_lbl, (margin_left, 135))
+        screen.blit(mode_lbl, (margin_left, 120))
 
-        metric_header = small_font.render("--- NETWORK TELEMETRY ---", True, GRAY)
-        screen.blit(metric_header, (margin_left, 190))
+        metric_header = bold_small_font.render("> AI AGENT METRICS", True, GRAY)
+        screen.blit(metric_header, (margin_left, 175))
 
-        ai_win_lbl = small_font.render(f"AI SUCCESSES: {ai_wins}", True, NEON_GREEN)
-        screen.blit(ai_win_lbl, (margin_left, 230))
+        ai_win_lbl = small_font.render(f"AI WINS: {ai_wins}", True, WHITE)
+        screen.blit(ai_win_lbl, (margin_left, 210))
 
-        ai_loss_lbl = small_font.render(f"AI FAILURES: {ai_losses}", True, NEON_PINK)
-        screen.blit(ai_loss_lbl, (margin_left, 270))
+        ai_loss_lbl = small_font.render(f"AI LOSSES: {ai_losses}", True, WHITE)
+        screen.blit(ai_loss_lbl, (margin_left, 245))
 
         total_ai_runs = ai_wins + ai_losses
         computed_ratio = (ai_wins / total_ai_runs * 100) if total_ai_runs > 0 else 0.0
-        ratio_lbl = small_font.render(f"EFFICIENCY RATIO: {computed_ratio:.1f}%", True, NEON_YELLOW)
-        screen.blit(ratio_lbl, (margin_left, 310))
+        ratio_lbl = small_font.render(f"EFFICIENCY: {computed_ratio:.1f}%", True, RETRO_YELLOW)
+        screen.blit(ratio_lbl, (margin_left, 280))
 
-        pygame.draw.line(screen, GRAY, (margin_left, 365), (WIDTH - 30, 365), 1)
+        pygame.draw.line(screen, GRAY, (margin_left, 325), (WIDTH - 25, 325), 1)
+
+        player_header = bold_small_font.render("> USER METRICS", True, GRAY)
+        screen.blit(player_header, (margin_left, 345))
+
+        p_win_lbl = small_font.render(f"USER WINS: {player_wins}", True, WHITE)
+        screen.blit(p_win_lbl, (margin_left, 380))
+
+        p_loss_lbl = small_font.render(f"USER LOSSES: {player_losses}", True, WHITE)
+        screen.blit(p_loss_lbl, (margin_left, 415))
+
+        pygame.draw.line(screen, GRAY, (margin_left, 460), (WIDTH - 25, 460), 1)
 
         seconds = game_time_ms // 1000
-        timer_label = small_font.render("ELAPSED TIME", True, NEON_CYAN)
-        screen.blit(timer_label, (margin_left, 390))
+        timer_label = small_font.render("ELAPSED TIME", True, RETRO_CYAN)
+        screen.blit(timer_label, (margin_left, 480))
 
-        timer_val = big_font.render(f"{seconds}s", True, WHITE)
-        screen.blit(timer_val, (margin_left, 430))
+        timer_val = big_font.render(f"{seconds:02d}s", True, WHITE)
+        screen.blit(timer_val, (margin_left, 515))
 
         if state == PAUSE:
             overlay = pygame.Surface((game_area_width, HEIGHT), pygame.SRCALPHA)
-            overlay.fill((12, 5, 20, 210)) 
+            overlay.fill((10, 5, 25, 220)) 
             screen.blit(overlay, (0, 0))
-
-            pause_title = big_font.render("PROCESS PAUSED", True, NEON_YELLOW)
-            pause_rect = pause_title.get_rect(centerx=game_area_width // 2, top=200)
+            pause_title = big_font.render("SYSTEM PAUSED", True, RETRO_YELLOW)
+            pause_rect = pause_title.get_rect(centerx=game_area_width // 2, top=220)
             screen.blit(pause_title, pause_rect)
             resume_button.draw(screen)
 
+    elif state == MENU:
+        title = big_font.render("NEURAL MOUSE // AI", True, RETRO_ORANGE)
+        title_rect = title.get_rect(centerx=WIDTH/2, top=130)
+        screen.blit(title, title_rect)
+        
+        info = small_font.render("Reinforcement Learning Grid Network Exploration", True, RETRO_CYAN)
+        info_rect = info.get_rect(centerx=WIDTH/2, top=230)
+        screen.blit(info, info_rect)
+
+        start_button.draw(screen)
+        ai_button.draw(screen)
+        ai_play_default.draw(screen)
+        quit_button.draw(screen)
+
     elif state == WIN:
-        win_text = big_font.render("RUN SUCCESSFUL", True, NEON_GREEN)
+        win_text = big_font.render("RUN SUCCESSFUL", True, RETRO_GREEN)
         win_rect = win_text.get_rect(centerx=WIDTH//2, top=160)
         screen.blit(win_text, win_rect)
         
@@ -445,14 +464,13 @@ while True:
         screen.blit(info, info_rect)
         
         final_seconds = game_time_ms // 1000
-        time_info = small_font.render(f"TOTAL TIME ELAPSED: {final_seconds}s", True, NEON_CYAN)
+        time_info = small_font.render(f"TOTAL TIME ELAPSED: {final_seconds}s", True, RETRO_CYAN)
         time_rect = time_info.get_rect(centerx=WIDTH//2, top=320)
         screen.blit(time_info, time_rect)
-
         restart_button.draw(screen)
 
     elif state == LOSE:
-        lose_text = big_font.render("CRITICAL FAILURE", True, NEON_PINK)
+        lose_text = big_font.render("CRITICAL FAILURE", True, RETRO_ORANGE) 
         lose_rect = lose_text.get_rect(centerx=WIDTH//2, top=180)
         screen.blit(lose_text, lose_rect)
         
@@ -461,5 +479,6 @@ while True:
         screen.blit(info, info_rect)
         
         restart_button.draw(screen)
+
 
     pygame.display.update()
