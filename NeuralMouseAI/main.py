@@ -210,9 +210,9 @@ while True:
                     new_distance = abs(player.x - cheese_pos[0]) + abs(player.y - cheese_pos[1])
 
                     if new_distance < old_distance:
-                        reward += 0.3
+                        reward += 0.5
                     else:
-                        reward -= 0.6
+                        reward -= 0.5
                     
                     cat_distance = abs(player.x - cats[0][0]) + abs(player.y - cats[0][1])
                     if cat_distance <= 2:
