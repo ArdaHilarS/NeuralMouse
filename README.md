@@ -15,16 +15,19 @@ To do this, we built a simple maze game where a mouse learns to reach a piece of
 * Trained model playback
 * Save and load trained models
 
-  Technologies
+
+ Technologies
 
 * Python
 * PyTorch
 * Pygame
 * NumPy
 
+
  Running the Project
 
 pip install pygame torch numpy
+
 python main.py
 
 From the main menu you can:
